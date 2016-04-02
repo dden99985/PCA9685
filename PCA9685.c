@@ -59,12 +59,12 @@ int PCA9685SetFrequency(int handle, unsigned frequency)
   prescale /= (double)frequency;         // desired frequency
 
   oldMode1 = wiringPiI2CReadReg8(hPCA9685, PWM_MODE1);
-  log_level(LOG_NORMAL, "  Read PWM_MODE1: %02X\n", oldMode1);
+  log_message(LOG_NORMAL, "  Read PWM_MODE1: %02X\n", oldMode1);
 
   mode1 = (oldMode1 & 0x6F);  // unset RESTART and SLEEP
 
   // Tell device to sleep
-  log_level(LOG_NORMAL, "  Set PWM_MODE1 to PWM_SLEEP: %02X\n", mode1 | PWM_SLEEP);
+  log_message(LOG_NORMAL, "  Set PWM_MODE1 to PWM_SLEEP: %02X\n", mode1 | PWM_SLEEP);
   if((status = wiringPiI2CWriteReg8(hPCA9685, PWM_MODE1, mode1 | PWM_SLEEP)) != 0)
   {
     log_error("  ERROR\n");
@@ -72,7 +72,7 @@ int PCA9685SetFrequency(int handle, unsigned frequency)
   }
 
   // Set PRESCALE
-  log_level(LOG_NORMAL, "  Set PWM_PRESCALE: %02X\n", (int)(prescale + 0.5));
+  log_message(LOG_NORMAL, "  Set PWM_PRESCALE: %02X\n", (int)(prescale + 0.5));
   if((status = wiringPiI2CWriteReg8(hPCA9685, PWM_PRESCALE, (int)(prescale + 0.5))) != 0)
   {
     log_error("  ERROR\n");
@@ -82,7 +82,7 @@ int PCA9685SetFrequency(int handle, unsigned frequency)
   delay(1);  // wait a bit in case PWM cycle was mid-stream (some PWM channels were running)
 
   // clear sleep flag
-  log_level(LOG_NORMAL, "  Clear sleep flag: %02X\n", mode1);
+  log_message(LOG_NORMAL, "  Clear sleep flag: %02X\n", mode1);
   if((status = wiringPiI2CWriteReg8(hPCA9685, PWM_MODE1, mode1)) != 0)
   {
     log_error("  ERROR\n");
@@ -92,7 +92,7 @@ int PCA9685SetFrequency(int handle, unsigned frequency)
   delay(1);  // Must wait at least 500uS for oscillator to wake up
 
   // set reset flag (which actually finishes the reset)
-  log_level(LOG_NORMAL, "  Set reset HIGH on PWM_MODE1: %02X\n", mode1 | PWM_RESTART);
+  log_message(LOG_NORMAL, "  Set reset HIGH on PWM_MODE1: %02X\n", mode1 | PWM_RESTART);
   if((status = wiringPiI2CWriteReg8(hPCA9685, PWM_MODE1, mode1 | PWM_RESTART)) != 0)
   {
     log_error("  ERROR\n");
@@ -101,7 +101,7 @@ int PCA9685SetFrequency(int handle, unsigned frequency)
 
   // Read the value of PWM_MODE1
   mode1 = wiringPiI2CReadReg8(hPCA9685, PWM_MODE1);
-  log_level(LOG_NORMAL, "  Read PWM_MODE1: %02X\n", mode1);
+  log_message(LOG_NORMAL, "  Read PWM_MODE1: %02X\n", mode1);
 
   log_function("PCA9685SetFrequency DONE\n");
   return 0;
@@ -178,7 +178,7 @@ int PCA9685Init(unsigned address, unsigned frequency)
     return -1;
   }
 
-  log_level(LOG_NORMAL, "Adding PCA9685 at address: %02x (i/o handle: %d) to row %d\n", address, hPCA9685, i);
+  log_message(LOG_NORMAL, "Adding PCA9685 at address: %02x (i/o handle: %d) to row %d\n", address, hPCA9685, i);
 
   PCA9685Info[i].hDevice = hPCA9685;
   PCA9685Info[i].address = address;
