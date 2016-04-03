@@ -4,7 +4,6 @@
 #define PWM_SUBADDR1	0x02
 #define PWM_SUBADDR2	0x03
 #define PWM_SUBADDR3	0x04
-#define PWM_PRESCALE	0x05
 #define PWM_LED0_ON_L	0x06
 #define PWM_LED0_ON_H	0x07
 #define PWM_LED0_OFF_L	0x08
@@ -13,6 +12,7 @@
 #define PWM_ALL_ON_H	0xFB
 #define PWM_ALL_OFF_L	0xFC
 #define PWM_ALL_OFF_H	0xFD
+#define PWM_PRESCALE	0xFE
 
 #define PWM_RESET	0x06
 #define PWM_RESTART	0x80

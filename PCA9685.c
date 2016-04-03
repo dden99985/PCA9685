@@ -43,7 +43,8 @@ int PCA9685SetFrequency(int handle, unsigned frequency)
 
   PCA9685InfoStruct *device;
   int hPCA9685;
-  double prescale;
+  double rawPrescale;
+  unsigned prescale;
   unsigned status;
   unsigned oldMode1;
   unsigned mode1;
@@ -54,9 +55,11 @@ int PCA9685SetFrequency(int handle, unsigned frequency)
   device->frequency = frequency;
 
   // Set PWM frequency
-  prescale = 25000000.0;                 // 25Hhz
-  prescale /= 4096.0;                    // 12-bit
-  prescale /= (double)frequency;         // desired frequency
+  rawPrescale = 25000000.0;                 // 25Hhz
+  rawPrescale /= 4096.0;                    // 12-bit
+  rawPrescale /= (double)frequency;         // desired frequency
+  prescale = (int)((rawPrescale += 0.5) - 1);
+  log_message(LOG_NORMAL, "  Raw Prescale: %f  Prescale: %d\n", rawPrescale, prescale);
 
   oldMode1 = wiringPiI2CReadReg8(hPCA9685, PWM_MODE1);
   log_message(LOG_NORMAL, "  Read PWM_MODE1: %02X\n", oldMode1);
@@ -72,8 +75,8 @@ int PCA9685SetFrequency(int handle, unsigned frequency)
   }
 
   // Set PRESCALE
-  log_message(LOG_NORMAL, "  Set PWM_PRESCALE: %02X\n", (int)(prescale + 0.5));
-  if((status = wiringPiI2CWriteReg8(hPCA9685, PWM_PRESCALE, (int)(prescale + 0.5))) != 0)
+  log_message(LOG_NORMAL, "  Set PWM_PRESCALE: %02X\n", prescale);
+  if((status = wiringPiI2CWriteReg8(hPCA9685, PWM_PRESCALE, prescale)) != 0)
   {
     log_error("  ERROR\n");
     return -1;
@@ -141,7 +144,7 @@ int PCA9685Setup(int handle)
   delay(5);
 
   // Set PWM frequency (which also does the rest of the reset)
-  PCA9685SetFrequency(handle, (*device).frequency);
+  PCA9685SetFrequency(handle, device->frequency);
 
   log_function("PCA9685Setup DONE\n");
 }
